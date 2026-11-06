@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Sobre Nosotros - Mercado E y M{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1>Sobre Nosotros</h1>
+        <p>Conocé la historia detrás del Mercado E y M</p>
+    </div>
+</section>
+
+<section class="about-section">
+    <div class="container">
+        <div class="about-content">
+            <div class="about-text">
+                <h2>Nuestra Historia</h2>
+                <p>El Mercado E y M nació como un emprendimiento familiar en María Auxiliadora, Itapúa. Empezamos con un puesto pequeño y con el tiempo crecimos hasta convertirnos en el mercado de referencia del barrio.</p>
+                <p>Lo que nos mueve es simple: que la gente encuentre lo que necesita cerca de su casa, a buen precio y con un trato honesto. Eso es lo que hacemos todos los días.</p>
+
+                <h2>Nuestra Misión</h2>
+                <p>Ser el mercado de confianza de cada familia de la zona. Productos frescos, precios transparentes y la misma calidez de siempre.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="values-section">
+    <div class="container">
+        <h2 class="section-title">Nuestros Valores</h2>
+        <div class="values-grid">
+            <div class="value-card">
+                <div class="value-icon">🌿</div>
+                <h3>Frescura</h3>
+                <p>Renovamos el stock todos los días para que siempre encuentres lo mejor.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">💰</div>
+                <h3>Precio Justo</h3>
+                <p>Trabajamos directo con productores para trasladarte el mejor precio.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">🤝</div>
+                <h3>Confianza</h3>
+                <p>Años de trato honesto con nuestros clientes y proveedores.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">📍</div>
+                <h3>Comunidad</h3>
+                <p>Somos parte del barrio y apoyamos a los productores locales.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="team-section">
+    <div class="container">
+        <h2 class="section-title">¿Por qué elegirnos?</h2>
+        <div class="reasons-grid">
+            <div class="reason-card">
+                <h3>🥇 Productos de Primera</h3>
+                <p>Seleccionamos cada producto para garantizar que llegue en el mejor estado a tu mesa.</p>
+            </div>
+            <div class="reason-card">
+                <h3>📦 Variedad en un Solo Lugar</h3>
+                <p>Frutas, verduras, carnes, lácteos, almacén y más, sin tener que ir a varios lados.</p>
+            </div>
+            <div class="reason-card">
+                <h3>⚡ Atención Rápida</h3>
+                <p>Sabemos que tu tiempo vale. Atendemos rápido y bien.</p>
+            </div>
+            <div class="reason-card">
+                <h3>💬 Pedidos por WhatsApp</h3>
+                <p>Mandanos tu lista por WhatsApp y lo tenemos listo cuando llegues.</p>
+            </div>
+            <div class="reason-card">
+                <h3>🌱 Productores Locales</h3>
+                <p>Priorizamos el producto local: más fresco para vos, más ingresos para el campo.</p>
+            </div>
+            <div class="reason-card">
+                <h3>😊 Trato de Siempre</h3>
+                <p>Sin vueltas, sin pretensiones. El trato cercano de un mercado de barrio.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Pasá a visitarnos</h2>
+            <p>Estamos abiertos todos los días, esperándote con los mejores productos</p>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-white">Ver Productos</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

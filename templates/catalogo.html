@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if cat_obj %}{{ cat_obj.nombre }} - Mercado E y M{% else %}Productos - Mercado E y M{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        {% if cat_obj %}
+        <h1>{{ cat_obj.icono }} {{ cat_obj.nombre }}</h1>
+        <p>{{ cat_obj.descripcion }}</p>
+        {% else %}
+        <h1>Todos nuestros Productos</h1>
+        <p>Todo lo que necesitás, en un solo lugar</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Filtros por categoría -->
+<section class="category-filter">
+    <div class="container">
+        <div class="filter-bar">
+            <a href="{{ url_for('catalogo') }}"
+               class="filter-btn {% if not categoria_sel %}active{% endif %}">
+                🛒 Todos
+            </a>
+            {% for cat in categorias %}
+            <a href="{{ url_for('catalogo', categoria=cat.id) }}"
+               class="filter-btn {% if categoria_sel == cat.id %}active{% endif %}">
+                {{ cat.icono }} {{ cat.nombre }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Grilla de productos -->
+<section class="menu-section">
+    <div class="container">
+        {% if productos %}
+        <div class="productos-count">
+            <p>{{ productos|length }} producto{% if productos|length != 1 %}s{% endif %} encontrado{% if productos|length != 1 %}s{% endif %}</p>
+        </div>
+        <div class="smoothie-grid">
+            {% for producto in productos %}
+            <a href="{{ url_for('producto_detalle', producto_id=producto.id) }}" class="smoothie-card-link">
+                <div class="smoothie-card">
+                    <div class="smoothie-image-real">
+                        <img src="{{ url_for('static', filename=producto.imagen) }}" alt="{{ producto.nombre }}">
+                        <div class="smoothie-badge producto-origen-{{ producto.origen|lower }}">{{ producto.origen }}</div>
+                        <div class="smoothie-category">{{ producto.categoria }}</div>
+                    </div>
+                    <div class="smoothie-info">
+                        <h3>{{ producto.nombre }}</h3>
+                        <p class="smoothie-description">{{ producto.descripcion }}</p>
+                        <div class="smoothie-footer">
+                            <span class="smoothie-price">
+                                ₲{{ "{:,}".format(producto.precio|int) }}
+                                <small class="unidad-label"> / {{ producto.unidad }}</small>
+                            </span>
+                            <span class="btn btn-secondary">Ver detalle</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p class="empty-icon">📦</p>
+            <h3>No hay productos en esta categoría todavía</h3>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-primary">Ver todos los productos</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Info rápida -->
+<section class="menu-info">
+    <div class="container">
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>🌿 Siempre Frescos</h3>
+                <p>Renovamos el stock todos los días para que siempre encuentres productos en su mejor estado.</p>
+            </div>
+            <div class="info-card">
+                <h3>💬 Pedidos por WhatsApp</h3>
+                <p>Mandanos tu lista y lo preparamos para cuando vengas a buscarlo. <a href="https://wa.me/595986932628" target="_blank">Escribinos acá.</a></p>
+            </div>
+            <div class="info-card">
+                <h3>📦 Precios al por mayor</h3>
+                <p>Consultanos por precios especiales en compras grandes. Atendemos familias y negocios.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

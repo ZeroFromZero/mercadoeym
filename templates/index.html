@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Mercado E y M - Tu Mercado de Confianza{% endblock %}
+
+{% block content %}
+
+<!-- Hero con slideshow -->
+<section class="hero hero-slideshow">
+    <div class="hero-slide active" style="background-image: url('{{ url_for('static', filename='hero-tomate.jpg') }}')"></div>
+    <div class="hero-slide" style="background-image: url('{{ url_for('static', filename='hero-carne.jpg') }}')"></div>
+    <div class="hero-slide" style="background-image: url('{{ url_for('static', filename='hero-pollo.jpg') }}')"></div>
+    <div class="hero-slide" style="background-image: url('{{ url_for('static', filename='hero-leche.jpg') }}')"></div>
+    <div class="hero-content">
+        <h1>Bienvenidos al Mercado E y M</h1>
+        <p class="hero-subtitle">Productos frescos, precios justos, atención de siempre</p>
+        <p class="hero-description">Frutas, verduras, carnes, lácteos, almacén y mucho más en un solo lugar</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('catalogo') }}" class="btn btn-primary">Ver Productos</a>
+            <a href="{{ url_for('contacto') }}" class="btn btn-white">Contactanos</a>
+        </div>
+    </div>
+</section>
+
+<!-- Categorías del mercado -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">¿Qué encontrás en el mercado?</h2>
+        <p class="section-subtitle">Todo bajo un mismo techo, fresco todos los días</p>
+        <div class="feature-grid">
+            {% for cat in categorias %}
+            <a href="{{ url_for('catalogo', categoria=cat.id) }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon feature-icon-emoji">{{ cat.icono }}</div>
+                    <h3>{{ cat.nombre }}</h3>
+                    <p>{{ cat.descripcion }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Productos destacados -->
+<section class="featured-smoothies">
+    <div class="container">
+        <h2 class="section-title">Productos Destacados</h2>
+        <p class="section-subtitle">Lo más pedido esta semana en el mercado</p>
+
+        <div class="smoothie-grid">
+            {% for producto in productos_destacados %}
+            <a href="{{ url_for('producto_detalle', producto_id=producto.id) }}" class="smoothie-card-link">
+                <div class="smoothie-card">
+                    <div class="smoothie-image-real">
+                        <img src="{{ url_for('static', filename=producto.imagen) }}" alt="{{ producto.nombre }}">
+                        <div class="smoothie-badge">{{ producto.origen }}</div>
+                        <div class="smoothie-category">{{ producto.categoria }}</div>
+                    </div>
+                    <div class="smoothie-info">
+                        <h3>{{ producto.nombre }}</h3>
+                        <p class="smoothie-description">{{ producto.descripcion }}</p>
+                        <div class="smoothie-footer">
+                            <span class="smoothie-price">
+                                ₲{{ "{:,}".format(producto.precio|int) }}
+                                <small class="unidad-label"> / {{ producto.unidad }}</small>
+                            </span>
+                            <span class="btn btn-secondary">Ver más</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="text-center">
+            <a href="{{ url_for('catalogo') }}" class="btn btn-primary">Ver Todos los Productos</a>
+        </div>
+    </div>
+</section>
+
+<!-- Por qué elegirnos -->
+<section class="features" style="background: var(--white);">
+    <div class="container">
+        <h2 class="section-title">¿Por qué elegirnos?</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-emoji">🌿</div>
+                <h3>Siempre Frescos</h3>
+                <p>Renovamos el stock todos los días para que siempre encuentres lo mejor del mercado</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-emoji">💰</div>
+                <h3>Precios Justos</h3>
+                <p>Trabajamos directo con productores locales para ofrecerte el mejor precio sin intermediarios</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-emoji">🤝</div>
+                <h3>Trato Cercano</h3>
+                <p>El trato honesto y directo de siempre. Acá te conocemos y te atendemos bien</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-emoji">💬</div>
+                <h3>Pedidos por WhatsApp</h3>
+                <p>Mandanos tu lista y lo preparamos. Pasás, retirás y listo</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA final -->
+<section class="cta-section cta-slideshow">
+    <div class="cta-slide active" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('{{ url_for('static', filename='fresas.jpg') }}')"></div>
+    <div class="cta-slide" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('{{ url_for('static', filename='mango.jpg') }}')"></div>
+    <div class="cta-slide" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('{{ url_for('static', filename='pina-grande.jpg') }}')"></div>
+    <div class="container">
+        <div class="cta-content">
+            <h2>Visitanos hoy</h2>
+            <p>Abrimos todos los días. Tu mercado de confianza te está esperando en María Auxiliadora.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('catalogo') }}" class="btn btn-white">Ver Productos</a>
+                <a href="{{ url_for('contacto') }}" class="btn btn-outline-white">Cómo llegar</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

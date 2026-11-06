@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}{{ producto.nombre }} - Mercado E y M{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <a href="{{ url_for('catalogo', categoria=producto.categoria) }}" class="back-link">
+            ← Volver a {% if cat_obj %}{{ cat_obj.nombre }}{% else %}Productos{% endif %}
+        </a>
+    </div>
+</section>
+
+<section class="smoothie-detail">
+    <div class="container">
+        <div class="detail-grid">
+
+            <!-- Imagen -->
+            <div class="detail-image-real">
+                <img src="{{ url_for('static', filename=producto.imagen) }}" alt="{{ producto.nombre }}">
+                <div class="detail-overlay">
+                    <div class="detail-badge-large">{{ producto.origen }}</div>
+                    <div class="detail-category-large">
+                        {% if cat_obj %}{{ cat_obj.icono }} {% endif %}{{ producto.categoria }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del producto -->
+            <div class="detail-content">
+                <h1>{{ producto.nombre }}</h1>
+                <p class="detail-description">{{ producto.descripcion }}</p>
+
+                <div class="detail-price">
+                    <span class="price-label">Precio:</span>
+                    <span class="price-value">
+                        ₲{{ "{:,}".format(producto.precio|int) }}
+                        <small style="font-size:1.1rem; font-weight:400; color: var(--text-light)"> / {{ producto.unidad }}</small>
+                    </span>
+                </div>
+
+                <div class="detail-ingredients">
+                    <h3>📋 Ficha del producto</h3>
+                    <ul class="ingredients-list">
+                        <li>📂 Categoría: <strong>{{ cat_obj.nombre if cat_obj else producto.categoria|capitalize }}</strong></li>
+                        <li>📍 Origen: <strong>{{ producto.origen }}</strong></li>
+                        <li>⚖️ Unidad de venta: <strong>{{ producto.unidad }}</strong></li>
+                        {% if producto.destacado %}
+                        <li>⭐ <strong>Producto destacado de la semana</strong></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="detail-actions">
+                    <a href="https://wa.me/595986932628?text=Hola%2C%20me%20interesa%20el%20producto%3A%20{{ producto.nombre }}"
+                       target="_blank"
+                       class="btn btn-primary btn-large">
+                        💬 Consultar por WhatsApp
+                    </a>
+                    <a href="{{ url_for('catalogo', categoria=producto.categoria) }}" class="btn btn-outline">
+                        ← Más {{ cat_obj.nombre if cat_obj else 'productos' }}
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Productos relacionados -->
+{% if relacionados %}
+<section class="recommendations">
+    <div class="container">
+        <h2 class="section-title">También puede interesarte</h2>
+        <div class="smoothie-grid">
+            {% for rel in relacionados %}
+            <a href="{{ url_for('producto_detalle', producto_id=rel.id) }}" class="smoothie-card-link">
+                <div class="smoothie-card">
+                    <div class="smoothie-image-real">
+                        <img src="{{ url_for('static', filename=rel.imagen) }}" alt="{{ rel.nombre }}">
+                        <div class="smoothie-badge">{{ rel.origen }}</div>
+                    </div>
+                    <div class="smoothie-info">
+                        <h3>{{ rel.nombre }}</h3>
+                        <p class="smoothie-description">{{ rel.descripcion }}</p>
+                        <div class="smoothie-footer">
+                            <span class="smoothie-price">₲{{ "{:,}".format(rel.precio|int) }}<small class="unidad-label"> / {{ rel.unidad }}</small></span>
+                            <span class="btn btn-secondary">Ver más</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
