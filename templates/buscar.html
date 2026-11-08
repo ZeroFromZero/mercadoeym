@@ -1,0 +1,71 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Resultados para "{{ q }}" - Supermercado E &amp; M{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1>🔍 "{{ q }}"</h1>
+        <p>
+            {% if productos %}
+                {{ productos|length }} resultado{% if productos|length != 1 %}s{% endif %} encontrado{% if productos|length != 1 %}s{% endif %}
+            {% else %}
+                Sin resultados
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+<section class="menu-section">
+    <div class="container">
+
+        {% if productos %}
+        <div class="smoothie-grid">
+            {% for producto in productos %}
+            {% set cat = categorias | selectattr('id','equalto', producto.categoria) | first %}
+            <a href="{{ url_for('producto_detalle', producto_id=producto.id) }}" class="smoothie-card-link">
+                <div class="smoothie-card">
+                    <div class="smoothie-image-real">
+                        <img src="{{ url_for('static', filename=producto.imagen) }}"
+                             alt="{{ producto.nombre }}"
+                             onerror="this.src='{{ url_for('static', filename='img1.jpg') }}'">
+                        <div class="smoothie-badge producto-origen-{{ producto.origen|lower }}">{{ producto.origen }}</div>
+                        <div class="smoothie-category">
+                            {% if cat %}{{ cat.icono }} {% endif %}{{ producto.categoria }}
+                        </div>
+                    </div>
+                    <div class="smoothie-info">
+                        <h3>{{ producto.nombre }}</h3>
+                        <p class="smoothie-description">{{ producto.descripcion }}</p>
+                        <div class="smoothie-footer">
+                            <span class="smoothie-price">
+                                ₲{{ "{:,}".format(producto.precio|int) }}
+                                <small class="unidad-label"> / {{ producto.unidad }}</small>
+                            </span>
+                            <form action="{{ url_for('carrito_agregar', pid=producto.id) }}" method="POST" class="add-cart-form" style="display:inline">
+                                <input type="hidden" name="cantidad" value="1">
+                                <button type="submit" class="btn btn-secondary btn-add-cart">🛒 Agregar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+            <p class="empty-icon">🔍</p>
+            <h3>No encontramos productos para "{{ q }}"</h3>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                Probá con otro término o explorá nuestras categorías.
+            </p>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-primary">Ver todos los productos</a>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

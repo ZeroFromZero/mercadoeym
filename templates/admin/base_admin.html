@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin{% endblock %} – Supermercado E &amp; M</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body class="admin-body">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+            <span>Mercado E&M</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}"
+               class="nav-item {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                📊 Dashboard
+            </a>
+            <a href="{{ url_for('admin_productos') }}"
+               class="nav-item {% if request.endpoint in ['admin_productos','admin_nuevo_producto','admin_editar_producto'] %}active{% endif %}">
+                📦 Productos
+            </a>
+            <a href="{{ url_for('admin_nuevo_producto') }}"
+               class="nav-item nav-item-highlight">
+                ➕ Nuevo Producto
+            </a>
+            <hr class="nav-divider">
+            <a href="{{ url_for('index') }}" class="nav-item" target="_blank">
+                🌐 Ver Sitio
+            </a>
+            <a href="{{ url_for('admin_logout') }}" class="nav-item nav-item-danger">
+                🚪 Cerrar Sesión
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="admin-main">
+        <div class="admin-topbar">
+            <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+            <h2 class="page-title">{% block page_title %}Panel{% endblock %}</h2>
+            <span class="admin-badge">🔑 Admin</span>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                            <button class="close-alert" onclick="this.parentElement.remove()">×</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="admin-content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

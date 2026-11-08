@@ -1,7 +1,7 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block title %}
-  {% if cat_obj %}{{ cat_obj.nombre }} - Mercado E y M{% else %}Productos - Mercado E y M{% endif %}
+  {% if cat_obj %}{{ cat_obj.nombre }} - Supermercado E &amp; M{% else %}Productos - Supermercado E &amp; M{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -60,7 +60,10 @@
                                 ₲{{ "{:,}".format(producto.precio|int) }}
                                 <small class="unidad-label"> / {{ producto.unidad }}</small>
                             </span>
-                            <span class="btn btn-secondary">Ver detalle</span>
+                            <form action="{{ url_for('carrito_agregar', pid=producto.id) }}" method="POST" class="add-cart-form" style="display:inline">
+                                <input type="hidden" name="cantidad" value="1">
+                                <button type="submit" class="btn btn-secondary btn-add-cart">🛒 Agregar</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -87,7 +90,7 @@
             </div>
             <div class="info-card">
                 <h3>💬 Pedidos por WhatsApp</h3>
-                <p>Mandanos tu lista y lo preparamos para cuando vengas a buscarlo. <a href="https://wa.me/595983561638" target="_blank">Escribinos acá.</a></p>
+                <p>Mandanos tu lista y lo preparamos para cuando vengas a buscarlo. <a href="https://wa.me/595985328017" target="_blank">Escribinos acá.</a></p>
             </div>
             <div class="info-card">
                 <h3>📦 Precios al por mayor</h3>

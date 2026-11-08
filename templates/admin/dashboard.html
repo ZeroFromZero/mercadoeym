@@ -1,0 +1,94 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Tarjetas de resumen -->
+<div class="stats-grid">
+    <div class="stat-card stat-blue">
+        <div class="stat-icon">📦</div>
+        <div class="stat-info">
+            <span class="stat-num">{{ total }}</span>
+            <span class="stat-label">Productos totales</span>
+        </div>
+    </div>
+    <div class="stat-card stat-gold">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-info">
+            <span class="stat-num">{{ destacados }}</span>
+            <span class="stat-label">Destacados</span>
+        </div>
+    </div>
+    <div class="stat-card stat-green">
+        <div class="stat-icon">🗂️</div>
+        <div class="stat-info">
+            <span class="stat-num">{{ por_cat|length }}</span>
+            <span class="stat-label">Categorías activas</span>
+        </div>
+    </div>
+</div>
+
+<!-- Productos por categoría -->
+<div class="dashboard-grid">
+    <div class="card">
+        <div class="card-header">
+            <h3>Productos por categoría</h3>
+        </div>
+        <div class="card-body">
+            {% for row in por_cat %}
+                {% set cat = categorias | selectattr('id','equalto', row['categoria']) | first %}
+                <div class="cat-row">
+                    <span class="cat-name">
+                        {% if cat %}{{ cat.icono }} {{ cat.nombre }}{% else %}{{ row['categoria'] }}{% endif %}
+                    </span>
+                    <div class="cat-bar-wrap">
+                        <div class="cat-bar" style="width: {{ (row['cnt'] / total * 100)|round|int }}%"></div>
+                    </div>
+                    <span class="cat-count">{{ row['cnt'] }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Últimos agregados -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Últimos productos agregados</h3>
+            <a href="{{ url_for('admin_productos') }}" class="card-link">Ver todos →</a>
+        </div>
+        <div class="card-body">
+            <table class="mini-table">
+                <thead>
+                    <tr><th>Producto</th><th>Categoría</th><th>Precio</th></tr>
+                </thead>
+                <tbody>
+                    {% for p in ultimos %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('admin_editar_producto', pid=p.id) }}">{{ p.nombre }}</a>
+                        </td>
+                        <td>{{ p.categoria }}</td>
+                        <td>₲{{ "{:,.0f}".format(p.precio) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Acceso rápido -->
+<div class="quick-actions">
+    <a href="{{ url_for('admin_nuevo_producto') }}" class="action-btn action-primary">
+        ➕ Agregar Producto
+    </a>
+    <a href="{{ url_for('admin_productos') }}" class="action-btn action-secondary">
+        📋 Ver todos los productos
+    </a>
+    <a href="{{ url_for('catalogo') }}" target="_blank" class="action-btn action-outline">
+        🌐 Ver catálogo público
+    </a>
+</div>
+
+{% endblock %}

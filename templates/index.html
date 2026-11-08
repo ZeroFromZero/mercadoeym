@@ -1,19 +1,18 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}Mercado E y M - Tu Mercado de Confianza{% endblock %}
+{% block title %}Supermercado E &amp; M - Tu Mercado de Confianza{% endblock %}
 
 {% block content %}
 
-<!-- Hero con slideshow -->
+<!-- Banner hero -->
 <section class="hero hero-slideshow">
     <div class="hero-slide active" style="background-image: url('{{ url_for('static', filename='hero-tomate.jpg') }}')"></div>
     <div class="hero-slide" style="background-image: url('{{ url_for('static', filename='hero-carne.jpg') }}')"></div>
     <div class="hero-slide" style="background-image: url('{{ url_for('static', filename='hero-pollo.jpg') }}')"></div>
     <div class="hero-slide" style="background-image: url('{{ url_for('static', filename='hero-leche.jpg') }}')"></div>
     <div class="hero-content">
-        <h1>Bienvenidos al Mercado E y M</h1>
-        <p class="hero-subtitle">Productos frescos, precios justos, atención de siempre</p>
-        <p class="hero-description">Frutas, verduras, carnes, lácteos, almacén y mucho más en un solo lugar</p>
+        <h1>Supermercado E &amp; M</h1>
+        <p class="hero-subtitle">Productos frescos · Precios justos · Atención de siempre</p>
         <div class="hero-buttons">
             <a href="{{ url_for('catalogo') }}" class="btn btn-primary">Ver Productos</a>
             <a href="{{ url_for('contacto') }}" class="btn btn-white">Contactanos</a>
@@ -21,104 +20,113 @@
     </div>
 </section>
 
-<!-- Categorías del mercado -->
-<section class="features">
+<!-- Categorías con imagen circular estilo supermercado -->
+<section class="cat-section">
     <div class="container">
-        <h2 class="section-title">¿Qué encontrás en el mercado?</h2>
-        <p class="section-subtitle">Todo bajo un mismo techo, fresco todos los días</p>
-        <div class="feature-grid">
+        <div class="cat-row">
             {% for cat in categorias %}
-            <a href="{{ url_for('catalogo', categoria=cat.id) }}" class="feature-card-link">
-                <div class="feature-card">
-                    <div class="feature-icon feature-icon-emoji">{{ cat.icono }}</div>
-                    <h3>{{ cat.nombre }}</h3>
-                    <p>{{ cat.descripcion }}</p>
+            <a href="{{ url_for('catalogo', categoria=cat.id) }}" class="cat-item">
+                <div class="cat-circle">
+                    <span class="cat-emoji">{{ cat.icono }}</span>
                 </div>
+                <span class="cat-label">{{ cat.nombre }}</span>
             </a>
             {% endfor %}
         </div>
     </div>
 </section>
 
-<!-- Productos destacados -->
-<section class="featured-smoothies">
+<!-- Productos por categoría -->
+{% for grupo in productos_por_cat %}
+<section class="prod-section">
     <div class="container">
-        <h2 class="section-title">Productos Destacados</h2>
-        <p class="section-subtitle">Lo más pedido esta semana en el mercado</p>
-
-        <div class="smoothie-grid">
-            {% for producto in productos_destacados %}
-            <a href="{{ url_for('producto_detalle', producto_id=producto.id) }}" class="smoothie-card-link">
-                <div class="smoothie-card">
-                    <div class="smoothie-image-real">
-                        <img src="{{ url_for('static', filename=producto.imagen) }}" alt="{{ producto.nombre }}">
-                        <div class="smoothie-badge">{{ producto.origen }}</div>
-                        <div class="smoothie-category">{{ producto.categoria }}</div>
+        <div class="prod-section-header">
+            <h2>{{ grupo.cat.icono }} {{ grupo.cat.nombre }}</h2>
+            <a href="{{ url_for('catalogo', categoria=grupo.cat.id) }}" class="ver-mas-link">Ver más &rsaquo;</a>
+        </div>
+        <div class="prod-grid">
+            {% for producto in grupo.productos %}
+            <a href="{{ url_for('producto_detalle', producto_id=producto.id) }}" class="prod-card-link">
+                <div class="prod-card">
+                    <div class="prod-img-wrap">
+                        <img src="{{ url_for('static', filename=producto.imagen) }}"
+                             alt="{{ producto.nombre }}"
+                             onerror="this.src='{{ url_for('static', filename='img1.jpg') }}'">
                     </div>
-                    <div class="smoothie-info">
-                        <h3>{{ producto.nombre }}</h3>
-                        <p class="smoothie-description">{{ producto.descripcion }}</p>
-                        <div class="smoothie-footer">
-                            <span class="smoothie-price">
-                                ₲{{ "{:,}".format(producto.precio|int) }}
-                                <small class="unidad-label"> / {{ producto.unidad }}</small>
-                            </span>
-                            <span class="btn btn-secondary">Ver más</span>
-                        </div>
+                    <div class="prod-info">
+                        <p class="prod-name">{{ producto.nombre }}</p>
+                        <p class="prod-unit">{{ producto.unidad }}</p>
+                        <p class="prod-price">₲ {{ "{:,.0f}".format(producto.precio) }}</p>
+                        <form action="{{ url_for('carrito_agregar', pid=producto.id) }}" method="POST" class="add-cart-form">
+                            <input type="hidden" name="cantidad" value="1">
+                            <button type="submit" class="prod-btn">🛒 Agregar</button>
+                        </form>
                     </div>
                 </div>
             </a>
             {% endfor %}
         </div>
-
-        <div class="text-center">
-            <a href="{{ url_for('catalogo') }}" class="btn btn-primary">Ver Todos los Productos</a>
-        </div>
     </div>
 </section>
+{% endfor %}
 
 <!-- Por qué elegirnos -->
-<section class="features" style="background: var(--white);">
+<section class="why-section">
     <div class="container">
-        <h2 class="section-title">¿Por qué elegirnos?</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <div class="feature-icon feature-icon-emoji">🌿</div>
-                <h3>Siempre Frescos</h3>
-                <p>Renovamos el stock todos los días para que siempre encuentres lo mejor del mercado</p>
+        <div class="why-grid">
+            <div class="why-item">
+                <span class="why-icon">🌿</span>
+                <div>
+                    <strong>Siempre Frescos</strong>
+                    <p>Stock renovado todos los días</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon feature-icon-emoji">💰</div>
-                <h3>Precios Justos</h3>
-                <p>Trabajamos directo con productores locales para ofrecerte el mejor precio sin intermediarios</p>
+            <div class="why-item">
+                <span class="why-icon">💰</span>
+                <div>
+                    <strong>Precios Justos</strong>
+                    <p>Directo del productor local</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon feature-icon-emoji">🤝</div>
-                <h3>Trato Cercano</h3>
-                <p>El trato honesto y directo de siempre. Acá te conocemos y te atendemos bien</p>
+            <div class="why-item">
+                <span class="why-icon">💬</span>
+                <div>
+                    <strong>Pedidos por WhatsApp</strong>
+                    <p>Mandá tu lista y lo preparamos</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon feature-icon-emoji">💬</div>
-                <h3>Pedidos por WhatsApp</h3>
-                <p>Mandanos tu lista y lo preparamos. Pasás, retirás y listo</p>
+            <div class="why-item">
+                <span class="why-icon">🤝</span>
+                <div>
+                    <strong>Trato Cercano</strong>
+                    <p>Acá te conocemos y te atendemos bien</p>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CTA final -->
-<section class="cta-section cta-slideshow">
-    <div class="cta-slide active" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('{{ url_for('static', filename='fresas.jpg') }}')"></div>
-    <div class="cta-slide" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('{{ url_for('static', filename='mango.jpg') }}')"></div>
-    <div class="cta-slide" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('{{ url_for('static', filename='pina-grande.jpg') }}')"></div>
+<!-- Mapa -->
+<section class="map-section">
     <div class="container">
-        <div class="cta-content">
-            <h2>Visitanos hoy</h2>
-            <p>Abrimos todos los días. Tu mercado de confianza te está esperando en María Auxiliadora.</p>
-            <div class="hero-buttons">
-                <a href="{{ url_for('catalogo') }}" class="btn btn-white">Ver Productos</a>
-                <a href="{{ url_for('contacto') }}" class="btn btn-outline-white">Cómo llegar</a>
+        <div class="map-header">
+            <span class="map-icon">📍</span>
+            <div>
+                <h2>Supermercado EYM</h2>
+                <p>María Auxiliadora, Tomás Romero Pereira, Itapúa, Paraguay</p>
             </div>
+        </div>
+        <div class="map-embed">
+            <iframe
+                src="https://www.google.com/maps?q=-26.524636691635394,-55.26404689770544&z=17&output=embed"
+                width="100%"
+                height="400"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Ubicación Supermercado E &amp; M">
+            </iframe>
         </div>
     </div>
 </section>

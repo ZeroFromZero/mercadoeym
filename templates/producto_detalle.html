@@ -1,6 +1,6 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}{{ producto.nombre }} - Mercado E y M{% endblock %}
+{% block title %}{{ producto.nombre }} - Supermercado E &amp; M{% endblock %}
 
 {% block content %}
 
@@ -53,10 +53,16 @@
                 </div>
 
                 <div class="detail-actions">
-                    <a href="https://wa.me/595983561638?text=Hola%2C%20me%20interesa%20el%20producto%3A%20{{ producto.nombre }}"
+                    <form action="{{ url_for('carrito_agregar', pid=producto.id) }}" method="POST" class="detail-add-form">
+                        <input type="hidden" name="cantidad" value="1">
+                        <button type="submit" class="btn btn-primary btn-large">
+                            🛒 Agregar al carrito
+                        </button>
+                    </form>
+                    <a href="https://wa.me/595985328017?text=Hola%2C%20me%20interesa%20el%20producto%3A%20{{ producto.nombre }}"
                        target="_blank"
-                       class="btn btn-primary btn-large">
-                        💬 Consultar por WhatsApp
+                       class="btn btn-secondary btn-large">
+                        💬 Consultar
                     </a>
                     <a href="{{ url_for('catalogo', categoria=producto.categoria) }}" class="btn btn-outline">
                         ← Más {{ cat_obj.nombre if cat_obj else 'productos' }}

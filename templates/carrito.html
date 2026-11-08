@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Carrito - Supermercado E &amp; M{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1>🛒 Tu Carrito</h1>
+        <p>{% if count %}{{ count }} producto{% if count != 1 %}s{% endif %} en el carrito{% else %}El carrito está vacío{% endif %}</p>
+    </div>
+</section>
+
+<section class="cart-section">
+    <div class="container">
+
+        {% if items %}
+
+        <!-- Lista de productos -->
+        <div class="cart-list">
+            {% for item in items %}
+            <div class="cart-item">
+                <div class="cart-item-img">
+                    <img src="{{ url_for('static', filename=item.imagen) }}"
+                         alt="{{ item.nombre }}"
+                         onerror="this.src='{{ url_for('static', filename='img1.jpg') }}'">
+                </div>
+                <div class="cart-item-info">
+                    <a href="{{ url_for('producto_detalle', producto_id=item.id) }}" class="cart-item-name">{{ item.nombre }}</a>
+                    <span class="cart-item-unit">Precio: ₲ {{ "{:,.0f}".format(item.precio) }} / {{ item.unidad }}</span>
+                    <span class="cart-item-subtotal">Subtotal: ₲ {{ "{:,.0f}".format(item.subtotal) }}</span>
+                </div>
+                <div class="cart-item-qty">
+                    <form action="{{ url_for('carrito_actualizar', pid=item.id) }}" method="POST" class="qty-form">
+                        <button type="button" class="qty-btn qty-minus" onclick="this.nextElementSibling.stepDown(); this.form.submit()">−</button>
+                        <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1" class="qty-input"
+                               onchange="this.form.submit()">
+                        <button type="button" class="qty-btn qty-plus" onclick="this.previousElementSibling.stepUp(); this.form.submit()">+</button>
+                    </form>
+                </div>
+                <div class="cart-item-remove">
+                    <form action="{{ url_for('carrito_quitar', pid=item.id) }}" method="POST">
+                        <button type="submit" class="btn-remove" title="Quitar del carrito">🗑️</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Resumen -->
+        <div class="cart-summary">
+            <div class="cart-summary-row cart-total-row">
+                <span>Total</span>
+                <span class="cart-total">₲ {{ "{:,.0f}".format(total) }}</span>
+            </div>
+            <div class="cart-actions">
+                <a href="{{ url_for('carrito_checkout') }}" class="btn btn-primary btn-large cart-checkout-btn">
+                    💬 Finalizar pedido por WhatsApp
+                </a>
+                <form action="{{ url_for('carrito_vaciar') }}" method="POST" style="display:inline">
+                    <button type="submit" class="btn btn-outline">Vaciar carrito</button>
+                </form>
+                <a href="{{ url_for('catalogo') }}" class="btn btn-outline">Seguir comprando</a>
+            </div>
+        </div>
+
+        {% else %}
+
+        <!-- Carrito vacío -->
+        <div class="empty-state">
+            <p class="empty-icon">🛒</p>
+            <h3>Tu carrito está vacío</h3>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                Agregá productos al carrito y finalizá el pedido por WhatsApp.
+            </p>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-primary">Ver productos</a>
+        </div>
+
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

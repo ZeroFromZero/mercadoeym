@@ -1,0 +1,98 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Productos{% endblock %}
+{% block page_title %}Gestión de Productos{% endblock %}
+
+{% block content %}
+
+<!-- Barra de filtros y búsqueda -->
+<div class="filter-toolbar">
+    <form method="GET" class="filter-form">
+        <input type="text" name="q" placeholder="🔍 Buscar producto..." value="{{ busqueda }}" class="search-input">
+        <select name="categoria" class="filter-select">
+            <option value="">Todas las categorías</option>
+            {% for cat in categorias %}
+            <option value="{{ cat.id }}" {% if categoria_sel == cat.id %}selected{% endif %}>
+                {{ cat.icono }} {{ cat.nombre }}
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn-filter">Filtrar</button>
+        {% if busqueda or categoria_sel %}
+        <a href="{{ url_for('admin_productos') }}" class="btn-clear">✕ Limpiar</a>
+        {% endif %}
+    </form>
+    <a href="{{ url_for('admin_nuevo_producto') }}" class="btn-add">➕ Nuevo Producto</a>
+</div>
+
+<p class="result-count">{{ productos|length }} producto{% if productos|length != 1 %}s{% endif %} encontrado{% if productos|length != 1 %}s{% endif %}</p>
+
+<!-- Tabla de productos -->
+{% if productos %}
+<div class="table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Unidad</th>
+                <th>Origen</th>
+                <th>Dest.</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in productos %}
+            {% set cat = categorias | selectattr('id','equalto', p.categoria) | first %}
+            <tr>
+                <td class="td-img">
+                    <img src="{{ url_for('static', filename=p.imagen) }}"
+                         alt="{{ p.nombre }}"
+                         onerror="this.src='{{ url_for('static', filename='img1.jpg') }}'">
+                </td>
+                <td class="td-nombre">
+                    <strong>{{ p.nombre }}</strong>
+                    <span class="td-desc">{{ p.descripcion[:60] }}{% if p.descripcion|length > 60 %}…{% endif %}</span>
+                </td>
+                <td>
+                    {% if cat %}
+                        <span class="badge-cat">{{ cat.icono }} {{ cat.nombre }}</span>
+                    {% else %}
+                        {{ p.categoria }}
+                    {% endif %}
+                </td>
+                <td class="td-precio">₲{{ "{:,.0f}".format(p.precio) }}</td>
+                <td>{{ p.unidad }}</td>
+                <td><span class="badge-origen badge-{{ p.origen|lower }}">{{ p.origen }}</span></td>
+                <td class="td-dest">
+                    <form method="POST" action="{{ url_for('admin_toggle_destacado', pid=p.id) }}" style="display:inline">
+                        <button type="submit" class="btn-star {% if p.destacado %}active{% endif %}"
+                                title="{% if p.destacado %}Quitar destacado{% else %}Marcar destacado{% endif %}">
+                            {% if p.destacado %}⭐{% else %}☆{% endif %}
+                        </button>
+                    </form>
+                </td>
+                <td class="td-actions">
+                    <a href="{{ url_for('admin_editar_producto', pid=p.id) }}" class="btn-edit" title="Editar">✏️</a>
+                    <a href="{{ url_for('producto_detalle', producto_id=p.id) }}" class="btn-view" target="_blank" title="Ver en sitio">👁️</a>
+                    <form method="POST" action="{{ url_for('admin_eliminar_producto', pid=p.id) }}"
+                          style="display:inline"
+                          onsubmit="return confirm('¿Eliminar {{ p.nombre }}? Esta acción no se puede deshacer.')">
+                        <button type="submit" class="btn-delete" title="Eliminar">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <p class="empty-icon">📦</p>
+    <h3>No se encontraron productos</h3>
+    <a href="{{ url_for('admin_nuevo_producto') }}" class="action-btn action-primary">➕ Agregar el primero</a>
+</div>
+{% endif %}
+
+{% endblock %}
