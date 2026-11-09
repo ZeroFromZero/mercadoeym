@@ -1,0 +1,97 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Pedidos{% endblock %}
+{% block page_title %}Pedidos Recibidos{% endblock %}
+
+{% block content %}
+
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card stat-blue">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-info">
+            <span class="stat-num">{{ pendientes }}</span>
+            <span class="stat-label">Pendientes</span>
+        </div>
+    </div>
+    <div class="stat-card stat-gold">
+        <div class="stat-icon">📦</div>
+        <div class="stat-info">
+            <span class="stat-num">{{ procesados }}</span>
+            <span class="stat-label">En proceso</span>
+        </div>
+    </div>
+    <div class="stat-card stat-green">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+            <span class="stat-num">{{ completados }}</span>
+            <span class="stat-label">Completados</span>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="filter-toolbar">
+    <a href="{{ url_for('admin_pedidos') }}" class="filter-btn {% if not estado_sel %}active{% endif %}" style="text-decoration:none">
+        Todos
+    </a>
+    <a href="{{ url_for('admin_pedidos', estado='pendiente') }}" class="filter-btn {% if estado_sel == 'pendiente' %}active{% endif %}" style="text-decoration:none">
+        ⏳ Pendientes
+    </a>
+    <a href="{{ url_for('admin_pedidos', estado='procesado') }}" class="filter-btn {% if estado_sel == 'procesado' %}active{% endif %}" style="text-decoration:none">
+        📦 En proceso
+    </a>
+    <a href="{{ url_for('admin_pedidos', estado='completado') }}" class="filter-btn {% if estado_sel == 'completado' %}active{% endif %}" style="text-decoration:none">
+        ✅ Completados
+    </a>
+</div>
+
+<!-- Lista de pedidos -->
+{% if pedidos %}
+<div class="pedidos-list">
+    {% for p in pedidos %}
+    <div class="pedido-card estado-{{ p.estado }}">
+        <div class="pedido-header">
+            <div class="pedido-num">
+                <span class="pedido-id">#{{ p.id }}</span>
+                <span class="pedido-estado estado-badge-{{ p.estado }}">{{ p.estado }}</span>
+            </div>
+            <span class="pedido-fecha">{{ p.fecha }}</span>
+        </div>
+        <div class="pedido-cliente">
+            <div class="pedido-dato"><strong>👤 Cliente:</strong> {{ p.cliente }}</div>
+            <div class="pedido-dato"><strong>🪪 Cédula:</strong> {{ p.cedula }}</div>
+            {% if p.telefono %}
+            <div class="pedido-dato"><strong>📞 Teléfono:</strong> {{ p.telefono }}</div>
+            {% endif %}
+        </div>
+        <div class="pedido-detalle">
+            <strong>🛒 Productos:</strong>
+            <pre class="pedido-productos">{{ p.detalle }}</pre>
+        </div>
+        <div class="pedido-footer">
+            <div class="pedido-total">Total: <span>₲ {{ "{:,.0f}".format(p.total) }}</span></div>
+            <div class="pedido-actions">
+                <form action="{{ url_for('admin_pedido_estado', pid=p.id) }}" method="POST" class="estado-form">
+                    <select name="estado" onchange="this.form.submit()" class="estado-select">
+                        <option value="pendiente" {% if p.estado == 'pendiente' %}selected{% endif %}>⏳ Pendiente</option>
+                        <option value="procesado" {% if p.estado == 'procesado' %}selected{% endif %}>📦 En proceso</option>
+                        <option value="completado" {% if p.estado == 'completado' %}selected{% endif %}>✅ Completado</option>
+                    </select>
+                </form>
+                <form action="{{ url_for('admin_pedido_eliminar', pid=p.id) }}" method="POST"
+                      onsubmit="return confirm('¿Eliminar el pedido #{{ p.id }}?')">
+                    <button type="submit" class="btn-delete" title="Eliminar">🗑️</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p class="empty-icon">📋</p>
+    <h3>No hay pedidos {{ estado_sel }}</h3>
+</div>
+{% endif %}
+
+{% endblock %}

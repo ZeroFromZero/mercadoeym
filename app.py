@@ -60,6 +60,18 @@ def init_db():
             destacado   INTEGER NOT NULL DEFAULT 0
         )
     ''')
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS pedidos (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            cliente     TEXT    NOT NULL,
+            cedula      TEXT    NOT NULL,
+            telefono    TEXT    NOT NULL DEFAULT '',
+            detalle     TEXT    NOT NULL,
+            total       REAL    NOT NULL DEFAULT 0,
+            estado      TEXT    NOT NULL DEFAULT 'pendiente',
+            fecha       TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+        )
+    ''')
     db.commit()
 
     # Migrar datos iniciales sólo si la tabla está vacía
@@ -332,6 +344,41 @@ def carrito_checkout():
     return redirect(f"https://wa.me/595985328017?text={texto}")
 
 
+@app.route('/carrito/pedido', methods=['POST'])
+def carrito_pedido():
+    """Guarda el pedido en la plataforma con nombre y cédula."""
+    items, total, count = get_cart()
+    if not items:
+        flash('El carrito está vacío.', 'error')
+        return redirect(url_for('carrito'))
+
+    nombre   = request.form.get('nombre', '').strip()
+    cedula   = request.form.get('cedula', '').strip()
+    telefono = request.form.get('telefono', '').strip()
+
+    if not nombre or not cedula:
+        flash('Nombre y cédula son obligatorios.', 'error')
+        return redirect(url_for('carrito'))
+
+    # Armar detalle en texto
+    lineas = []
+    for item in items:
+        lineas.append(f"{item['nombre']} x{item['cantidad']} - ₲{item['subtotal']:,.0f}")
+    detalle = '\n'.join(lineas)
+
+    db = get_db()
+    db.execute('''
+        INSERT INTO pedidos (cliente, cedula, telefono, detalle, total, estado)
+        VALUES (?,?,?,?,?, 'pendiente')
+    ''', (nombre, cedula, telefono, detalle, total))
+    db.commit()
+
+    # Vaciar carrito
+    session.pop('cart', None)
+    flash('¡Pedido enviado con éxito! Nos comunicaremos con vos pronto.', 'success')
+    return redirect(url_for('carrito'))
+
+
 # ── Admin: login / logout ─────────────────────────────────────────────────────
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -368,11 +415,15 @@ def admin_dashboard():
     ultimos   = db.execute(
         'SELECT * FROM productos ORDER BY id DESC LIMIT 5'
     ).fetchall()
+    pedidos_pendientes = db.execute(
+        "SELECT COUNT(*) FROM pedidos WHERE estado='pendiente'"
+    ).fetchone()[0]
     return render_template('admin/dashboard.html',
                            total=total,
                            destacados=destacados,
                            por_cat=por_cat,
                            ultimos=ultimos,
+                           pedidos_pendientes=pedidos_pendientes,
                            categorias=CATEGORIAS)
 
 
@@ -558,6 +609,51 @@ def admin_toggle_destacado(pid):
         db.execute('UPDATE productos SET destacado=? WHERE id=?', (nuevo, pid))
         db.commit()
     return redirect(request.referrer or url_for('admin_productos'))
+
+
+# ── Admin: pedidos ─────────────────────────────────────────────────────────────
+@app.route('/admin/pedidos')
+@login_required
+def admin_pedidos():
+    db = get_db()
+    estado_filtro = request.args.get('estado', '')
+    if estado_filtro:
+        pedidos = db.execute(
+            'SELECT * FROM pedidos WHERE estado=? ORDER BY id DESC', (estado_filtro,)
+        ).fetchall()
+    else:
+        pedidos = db.execute('SELECT * FROM pedidos ORDER BY id DESC').fetchall()
+
+    pendientes  = db.execute("SELECT COUNT(*) FROM pedidos WHERE estado='pendiente'").fetchone()[0]
+    procesados  = db.execute("SELECT COUNT(*) FROM pedidos WHERE estado='procesado'").fetchone()[0]
+    completados = db.execute("SELECT COUNT(*) FROM pedidos WHERE estado='completado'").fetchone()[0]
+    return render_template('admin/pedidos.html',
+                           pedidos=pedidos,
+                           estado_sel=estado_filtro,
+                           pendientes=pendientes,
+                           procesados=procesados,
+                           completados=completados)
+
+
+@app.route('/admin/pedidos/<int:pid>/estado', methods=['POST'])
+@login_required
+def admin_pedido_estado(pid):
+    nuevo_estado = request.form.get('estado', 'pendiente')
+    db = get_db()
+    db.execute('UPDATE pedidos SET estado=? WHERE id=?', (nuevo_estado, pid))
+    db.commit()
+    flash('Estado del pedido actualizado.', 'success')
+    return redirect(url_for('admin_pedidos'))
+
+
+@app.route('/admin/pedidos/<int:pid>/eliminar', methods=['POST'])
+@login_required
+def admin_pedido_eliminar(pid):
+    db = get_db()
+    db.execute('DELETE FROM pedidos WHERE id=?', (pid,))
+    db.commit()
+    flash('Pedido eliminado.', 'success')
+    return redirect(url_for('admin_pedidos'))
 
 
 # ── Inicialización ────────────────────────────────────────────────────────────

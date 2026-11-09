@@ -53,15 +53,42 @@
                 <span>Total</span>
                 <span class="cart-total">₲ {{ "{:,.0f}".format(total) }}</span>
             </div>
-            <div class="cart-actions">
-                <a href="{{ url_for('carrito_checkout') }}" class="btn btn-primary btn-large cart-checkout-btn">
-                    💬 Finalizar pedido por WhatsApp
-                </a>
-                <form action="{{ url_for('carrito_vaciar') }}" method="POST" style="display:inline">
-                    <button type="submit" class="btn btn-outline">Vaciar carrito</button>
-                </form>
-                <a href="{{ url_for('catalogo') }}" class="btn btn-outline">Seguir comprando</a>
-            </div>
+        </div>
+
+        <!-- Formulario de pedido en plataforma -->
+        <div class="cart-pedido-form">
+            <h3>📝 Confirmar pedido</h3>
+            <p class="form-hint">Completá tus datos y el pedido llega directo al supermercado.</p>
+            <form action="{{ url_for('carrito_pedido') }}" method="POST">
+                <div class="form-group">
+                    <label for="nombre">Nombre completo *</label>
+                    <input type="text" id="nombre" name="nombre" required
+                           placeholder="Ej: Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label for="cedula">Cédula *</label>
+                    <input type="text" id="cedula" name="cedula" required
+                           placeholder="Ej: 1234567">
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono (opcional)</label>
+                    <input type="text" id="telefono" name="telefono"
+                           placeholder="Ej: 0985 328 017">
+                </div>
+                <button type="submit" class="btn btn-primary btn-large btn-enviar-pedido">
+                    ✅ Enviar pedido
+                </button>
+            </form>
+        </div>
+
+        <div class="cart-actions">
+            <a href="{{ url_for('carrito_checkout') }}" class="btn btn-secondary">
+                💬 También por WhatsApp
+            </a>
+            <form action="{{ url_for('carrito_vaciar') }}" method="POST" style="display:inline">
+                <button type="submit" class="btn btn-outline">Vaciar carrito</button>
+            </form>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-outline">Seguir comprando</a>
         </div>
 
         {% else %}

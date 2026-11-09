@@ -25,6 +25,10 @@
                class="nav-item {% if request.endpoint in ['admin_productos','admin_nuevo_producto','admin_editar_producto'] %}active{% endif %}">
                 📦 Productos
             </a>
+            <a href="{{ url_for('admin_pedidos') }}"
+               class="nav-item {% if request.endpoint == 'admin_pedidos' %}active{% endif %}">
+                📋 Pedidos
+            </a>
             <a href="{{ url_for('admin_nuevo_producto') }}"
                class="nav-item nav-item-highlight">
                 ➕ Nuevo Producto

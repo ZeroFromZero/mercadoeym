@@ -2576,3 +2576,48 @@ footer::before {
     opacity: .8;
     cursor: default;
 }
+
+/* ── Formulario de pedido en carrito ── */
+.cart-pedido-form {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    border: 1px solid #eee;
+    max-width: 400px;
+    margin-left: auto;
+    margin-top: 1rem;
+}
+.cart-pedido-form h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: .3rem;
+}
+.form-hint {
+    font-size: .8rem;
+    color: var(--text-light);
+    margin-bottom: .8rem;
+}
+.cart-pedido-form .form-group { margin-bottom: .7rem; }
+.cart-pedido-form label {
+    display: block;
+    font-size: .85rem;
+    font-weight: 600;
+    margin-bottom: .25rem;
+}
+.cart-pedido-form input {
+    width: 100%;
+    padding: .55rem .8rem;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: .9rem;
+}
+.cart-pedido-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+.btn-enviar-pedido {
+    width: 100%;
+    margin-top: .4rem;
+}
