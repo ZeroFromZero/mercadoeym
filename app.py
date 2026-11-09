@@ -4,6 +4,7 @@ from functools import wraps
 from flask import (Flask, render_template, request, flash,
                    redirect, url_for, session, g, jsonify)
 from werkzeug.utils import secure_filename
+from werkzeug.exceptions import RequestEntityTooLarge
 
 app = Flask(__name__)
 app.secret_key = 'mercado_eym_clave_2026'
@@ -17,6 +18,7 @@ ADMIN_USER     = 'admin'
 ADMIN_PASSWORD = 'mercado2026'   # cambialo después de la primera entrada
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ── Categorías ────────────────────────────────────────────────────────────────
@@ -102,6 +104,11 @@ def init_db():
 # ── Helpers ───────────────────────────────────────────────────────────────────
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.errorhandler(RequestEntityTooLarge)
+def handle_large_file(e):
+    flash('El archivo es demasiado grande. Máximo permitido: 50 MB.', 'error')
+    return redirect(request.referrer or url_for('admin_productos'))
 
 def get_cat(cat_id):
     return next((c for c in CATEGORIAS if c['id'] == cat_id), None)
